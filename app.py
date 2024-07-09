@@ -5,11 +5,12 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fines.db'
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///fines.db"
 db = SQLAlchemy(app)
 
+
 class Fine(db.Model):
-    __tablename__= "fine"
+    __tablename__ = "fine"
     id: Mapped[int] = mapped_column(primary_key=True)
     abatere: Mapped[str] = mapped_column(String(100))
     data: Mapped[str] = mapped_column(String(100))
@@ -25,7 +26,8 @@ def create():
     new_fine = Fine(abatere=abatere, data=data, autoritate=autoritate)
     db.session.add(new_fine)
     db.session.commit()
-    return {"mesage":"you've introduced a new fine"}, 201
+    return {"mesage": "you've introduced a new fine"}, 201
+
 
 @app.get("/fines")
 @app.get("/fines/<int:id>")
@@ -34,12 +36,14 @@ def read(id=None):
         all_fines = Fine.query.all()
         serialized_fines = []
         for element in all_fines:
-            serialized_fines.append({
-                "id": element.id,
-                "abatere": element.abatere,
-                "data": element.data,
-                "autoritate": element.autoritate
-            })
+            serialized_fines.append(
+                {
+                    "id": element.id,
+                    "abatere": element.abatere,
+                    "data": element.data,
+                    "autoritate": element.autoritate,
+                }
+            )
         return serialized_fines
     else:
         fine = Fine.query.get(id)
@@ -48,10 +52,11 @@ def read(id=None):
                 "id": fine.id,
                 "abatere": fine.abatere,
                 "data": fine.data,
-                "autoritate": fine.autoritate
+                "autoritate": fine.autoritate,
             }
         else:
-            return {"mesage":"fine not found"}, 404
+            return {"mesage": "fine not found"}, 404
+
 
 @app.put("/fines/<int:id>")
 def update(id):
@@ -64,7 +69,7 @@ def update(id):
         fine.data = data
         fine.autoritate = autoritate
         db.session.commit()
-        return {"mesage":"fine updates"}, 200
+        return {"mesage": "fine updates"}, 200
     else:
         return {"mesage": "fine not found"}, 404
 
@@ -75,13 +80,10 @@ def delete(id):
     if fine:
         db.session.delete(fine)
         db.session.commit()
-        return {"mesage":"fine deleted"}, 200
+        return {"mesage": "fine deleted"}, 200
     else:
-        return {"mesage":"fine not found"}, 404
+        return {"mesage": "fine not found"}, 404
+
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
-
-
